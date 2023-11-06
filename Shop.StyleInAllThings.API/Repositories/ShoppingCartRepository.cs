@@ -70,9 +70,16 @@ namespace Shop.StyleInAllThings.API.Repositories
                               CartId = cartItem.CartId
                           }).SingleOrDefaultAsync();
         }
-        public Task<CartItem> DeleteItem(int id)
+        public async Task<CartItem> DeleteItem(int id)
         {
-            throw new NotImplementedException();
+            var item = await shopDbContext.CartItems.FindAsync(id);
+
+            if(item != null)
+            {
+                shopDbContext.CartItems.Remove(item);
+                await shopDbContext.SaveChangesAsync();
+            }
+            return item;
         }
 
         public Task<CartItem> UpdateQuantity(int id, CartItemQuantityUpdateDto cartItemQuantityUpdateDto)
