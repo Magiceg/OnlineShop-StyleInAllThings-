@@ -82,9 +82,17 @@ namespace Shop.StyleInAllThings.API.Repositories
             return item;
         }
 
-        public Task<CartItem> UpdateQuantity(int id, CartItemQuantityUpdateDto cartItemQuantityUpdateDto)
+        public async Task<CartItem> UpdateQuantity(int id, CartItemQuantityUpdateDto cartItemQuantityUpdateDto)
         {
-            throw new NotImplementedException();
+            var item = await shopDbContext.CartItems.FindAsync(id);
+            if(item != null)
+            {
+                item.Quantity = cartItemQuantityUpdateDto.Quantity;
+                await shopDbContext.SaveChangesAsync();
+                return item;
+            }
+
+            return null;
         }
     }
 }

@@ -1,6 +1,8 @@
-﻿using Shop.Models.DataTransferObjects;
+﻿using Newtonsoft.Json;
+using Shop.Models.DataTransferObjects;
 using SHOP.StyleInAllThings.Services.Contracts;
 using System.Net.Http.Json;
+using System.Text;
 
 namespace SHOP.StyleInAllThings.Services
 {
@@ -87,6 +89,29 @@ namespace SHOP.StyleInAllThings.Services
             catch (Exception)
             {
 
+                throw;
+            }
+		}
+
+		public async Task<CartItemDto> UpdateQuantity(CartItemQuantityUpdateDto cartItemQuantityUpdateDto)
+		{
+            try
+            {
+                var jsonRequest = JsonConvert.SerializeObject(cartItemQuantityUpdateDto);
+
+                var content = new StringContent(jsonRequest, Encoding.UTF8, "application/json-patch+json");
+
+                var response = await httpClient.PatchAsync($"api/ShoppingCart/{cartItemQuantityUpdateDto.CartItemId}", content);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    return await response.Content.ReadFromJsonAsync<CartItemDto>();
+                }
+                return null;
+            }
+            catch (Exception ex)
+            {
+                // log
                 throw;
             }
 		}

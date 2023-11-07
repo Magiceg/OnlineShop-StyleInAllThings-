@@ -1,4 +1,6 @@
-﻿@page "/ProductDetails/{Id:int}"
+﻿@using System.Globalization
+
+@page "/ProductDetails/{Id:int}"
 
 @inherits ProductDetailsBase
 
@@ -22,7 +24,7 @@ else
 			<p class="mb-4">@Product.Description</p>
 			<p class="mb-4">
 				<b>
-					@Product.Price.ToString("C")&nbsp;(@Product.Quantity items in stock) 
+					@Product.Price.ToString("C", new CultureInfo("en-US").NumberFormat)&nbsp;(@Product.Quantity items in stock)
 				</b>
 				<div>
 					<button class="btn btn-success"
