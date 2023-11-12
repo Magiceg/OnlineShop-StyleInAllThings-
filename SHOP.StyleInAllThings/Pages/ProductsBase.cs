@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.Identity.Client;
 using Shop.Models.DataTransferObjects;
+using SHOP.StyleInAllThings.Services;
 using SHOP.StyleInAllThings.Services.Contracts;
 
 namespace SHOP.StyleInAllThings.Pages
@@ -10,12 +11,33 @@ namespace SHOP.StyleInAllThings.Pages
         [Inject]
         public IProductService ProductService { get; set; }
 
+        [Inject]
+        public IShoppingCartService ShoppingCartService { get; set; }
+
         public IEnumerable<ProductDto> Products { get; set; }
+
+        public NavigationManager NavigationManager { get; set; }
         public string ErrorMessage { get; set; }
 
         protected override async Task OnInitializedAsync()
         {
-            Products = await ProductService.GetItems();
+            try
+            {
+				Products = await ProductService.GetItems();
+
+                var shoppingCartItems = await ShoppingCartService.GetItems(HardCoded.UserId);
+
+                var totalQuantity = shoppingCartItems.Sum(x => x.Quantity);
+
+                ShoppingCartService.RaiseEventOnShoppingCartChanged(totalQuantity);
+
+
+
+			}
+            catch (Exception ex)
+            {
+                ErrorMessage = ex.Message;
+            }
         }
 
         protected IOrderedEnumerable<IGrouping<int, ProductDto>> GetGroupedProductsByCategory()

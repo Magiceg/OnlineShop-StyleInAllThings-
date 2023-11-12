@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using Shop.Models.DataTransferObjects;
+using SHOP.StyleInAllThings.Services;
 using SHOP.StyleInAllThings.Services.Contracts;
 using System.Globalization;
 using System.Security.Cryptography;
@@ -23,7 +24,7 @@ namespace SHOP.StyleInAllThings.Pages
             try
             {
                 ShoppingCartItems = await ShoppingCartService.GetItems(HardCoded.UserId);
-                CalculateCartSummaryTotals();
+                CartChanged();
             }
             catch (Exception ex)
             {
@@ -34,7 +35,7 @@ namespace SHOP.StyleInAllThings.Pages
         {
             var cartItem = await ShoppingCartService.DeleteItem(id);
             RemoveCartItem(id);
-            CalculateCartSummaryTotals();
+            CartChanged();
         }
 
         protected async Task UpdateQuantityCartItem_Click(int id, int quantity)
@@ -53,7 +54,7 @@ namespace SHOP.StyleInAllThings.Pages
                     
                     UpdateItemTotalPrice(returnedUpdateItemDto);
 
-                    CalculateCartSummaryTotals();
+                    CartChanged();
 
 					await Js.InvokeVoidAsync("MakeUpdateQtyButtonVisible", id, false);
 				}
@@ -109,6 +110,13 @@ namespace SHOP.StyleInAllThings.Pages
             var cartItemDto = GetCartItem(id);
 
             ShoppingCartItems.Remove(cartItemDto);
+        }
+
+        private void CartChanged()
+        {
+            CalculateCartSummaryTotals();
+
+            ShoppingCartService.RaiseEventOnShoppingCartChanged(TotalQuantity);
         }
 
 

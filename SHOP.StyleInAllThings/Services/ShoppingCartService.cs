@@ -115,5 +115,13 @@ namespace SHOP.StyleInAllThings.Services
                 throw;
             }
 		}
+
+		public void RaiseEventOnShoppingCartChanged(int totalQuantity)
+		{
+			if(OnShoppingCartChanged != null)
+            {
+                OnShoppingCartChanged.Invoke(totalQuantity);
+            }
+		}
 	}
 }
